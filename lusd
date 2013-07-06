@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+
+import couchdb
+from configobj import ConfigObj
+from twisted.web import server, resource
+from twisted.internet import reactor
+
+class LUSDResource(resource.Resource):
+    isLeaf = True
+
+    def getConfig(self):
+        cfgFile = file('config.cfg')
+        return ConfigObj(cfgFile)
+
+
+    def getLocation(self, _id):
+        cfg   = self.getConfig()
+        couch = couchdb.Server(cfg['couchdb_server'])
+        db    = couch[cfg['couchdb_database']]
+        try:
+            doc = db[_id]
+            return doc['location']
+        except couchdb.http.ResourceNotFound:
+            print("Resource " + _id + " not found")
+            return None
+    
+    def render_GET(self, request):
+        location = self.getLocation(request.path[1:])
+        
+        if location == None:
+            request.setResponseCode(404)
+            return "404 not found"
+        else:
+            request.setResponseCode(301)
+            request.setHeader("location", location)
+            return "301 moved permanently to " + location
+
+reactor.listenTCP(8080, server.Site(LUSDResource()))
+reactor.run()
