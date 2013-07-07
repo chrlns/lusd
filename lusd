@@ -2,22 +2,29 @@
 
 import couchdb
 import time
+
 from configobj import ConfigObj
 from twisted.web import server, resource
 from twisted.internet import reactor
 
+
+def getConfig():
+    cfgFile = file('config.cfg')
+    return ConfigObj(cfgFile)
+
+
 class LUSDResource(resource.Resource):
+    """
+    Resource handling all HTTP requests to the short url daemon.
+    GET requests are redirected to the appropriate long url.
+    POST requests return a short url to a given long one.
+    """
+    
     isLeaf = True
 
-    def getConfig(self):
-        cfgFile = file('config.cfg')
-        return ConfigObj(cfgFile)
-
-
     def getLocation(self, _id):
-        cfg   = self.getConfig()
-        couch = couchdb.Server(cfg['couchdb_server'])
-        db    = couch[cfg['couchdb_database']]
+        couch = couchdb.Server(config['couchdb_server'])
+        db    = couch[config['couchdb_database']]
         try:
             doc = db[_id]
             
@@ -41,6 +48,11 @@ class LUSDResource(resource.Resource):
             request.setResponseCode(301)
             request.setHeader("location", location)
             return "301 moved permanently to " + location
+            
+    def render_POST(self, request):
+        return
 
-reactor.listenTCP(8080, server.Site(LUSDResource()))
+
+config = getConfig()
+reactor.listenTCP(int(config['listen_port']), server.Site(LUSDResource()))
 reactor.run()

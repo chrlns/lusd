@@ -1,2 +1,3 @@
 couchdb_server   = http://myhost:5984/
 couchdb_database = mydb
+listen_port      = 8080
