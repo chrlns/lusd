@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import couchdb
+import time
 from configobj import ConfigObj
 from twisted.web import server, resource
 from twisted.internet import reactor
@@ -19,6 +20,12 @@ class LUSDResource(resource.Resource):
         db    = couch[cfg['couchdb_database']]
         try:
             doc = db[_id]
+            
+            # Update stats
+            doc['hits']        = doc['hits'] + 1
+            doc['last_access'] = time.asctime(time.localtime(time.time()))
+            db[_id] = doc
+            
             return doc['location']
         except couchdb.http.ResourceNotFound:
             print("Resource " + _id + " not found")
