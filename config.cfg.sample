@@ -1,3 +1,12 @@
-couchdb_server   = http://myhost:5984/
-couchdb_database = mydb
-listen_port      = 8080
+# Unknown short url request will be redirected to the following url;
+# set to None to disable the redirect and simply return HTTP 404
+error404_redirect = None
+
+# url of the CouchDB
+couchdb_server    = http://localhost:5984/
+
+# Name of the CouchDB database used for lusd
+couchdb_database  = mydb
+
+# Port of this daemon listening for incoming connections
+listen_port       = 8080

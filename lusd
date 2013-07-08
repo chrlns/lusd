@@ -23,6 +23,9 @@ class LUSDResource(resource.Resource):
     isLeaf = True
 
     def getLocation(self, _id):
+        if _id == None or _id == '':
+            return None
+            
         couch = couchdb.Server(config['couchdb_server'])
         db    = couch[config['couchdb_database']]
         try:
@@ -42,13 +45,16 @@ class LUSDResource(resource.Resource):
         location = self.getLocation(request.path[1:])
         
         if location == None:
-            request.setResponseCode(404)
-            return "404 not found"
-        else:
-            request.setResponseCode(301)
-            request.setHeader("location", location)
-            return "301 moved permanently to " + location
-            
+            if config['error404_redirect'] == 'None':
+                request.setResponseCode(404)
+                return "404 not found"
+            else:
+                location = config['error404_redirect'] + request.path[1:]
+        
+        request.setResponseCode(301)
+        request.setHeader("location", location)
+        return "301 moved permanently to " + location
+        
     def render_POST(self, request):
         return
 

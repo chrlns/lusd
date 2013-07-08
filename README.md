@@ -1,6 +1,6 @@
 # LUSD #
 
-LUSD stands for lins.me url shortening daemon and is what it says.
+LUSD stands for little url shortening daemon and is what it says.
 
 ## Requirements ##
 
