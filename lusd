@@ -37,6 +37,11 @@ class LUSDResource(resource.Resource):
     
     isLeaf = True
 
+    def createShortURL(self, longURL):
+        couch = couchdb.Server(config['couchdb_server'])
+        db    = couch[config['couchdb_database']]
+        return 
+
     def getLocation(self, _id):
         if _id == None or _id == '':
             return None
@@ -71,6 +76,8 @@ class LUSDResource(resource.Resource):
         return "301 moved permanently to " + location
         
     def render_POST(self, request):
+        if request.path == "/create":
+            self.createShortURL()
         return
 
 
