@@ -10,3 +10,6 @@ couchdb_database  = mydb
 
 # Port of this daemon listening for incoming connections
 listen_port       = 8080
+
+# Prefix for short url, e.g. http://mydom.com/+XXY
+short_prefix      = +

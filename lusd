@@ -43,8 +43,11 @@ class LUSDResource(resource.Resource):
         return 
 
     def getLocation(self, _id):
-        if _id == None or _id == '':
+        if _id == None or _id == '' or _id[0:1] != config['short_prefix']:
             return None
+
+        _id = _id[1:]
+        print("Resource " + _id)
             
         couch = couchdb.Server(config['couchdb_server'])
         db    = couch[config['couchdb_database']]
