@@ -16,16 +16,32 @@
 #  limitations under the License.
 
 import couchdb
+import os
 import time
 
 from configobj import ConfigObj
 from twisted.web import server, resource
 from twisted.internet import reactor
 
+# Short url alphabet, note the missing l and I for better readability
+ALPHABET = '0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ'
+
 
 def getConfig():
     cfgFile = file('config.cfg')
     return ConfigObj(cfgFile)
+
+
+def shortMe(hexhash):
+    out = ''
+    num = int(hexhash, 16)
+
+    while num > 0:
+        rem = num % len(ALPHABET)
+        num = num / len(ALPHABET)
+        out = ALPHABET[rem] + out
+
+    return out
 
 
 class LUSDResource(resource.Resource):
@@ -48,9 +64,14 @@ class LUSDResource(resource.Resource):
 
         _id = _id[1:]
         print("Resource " + _id)
-            
-        couch = couchdb.Server(config['couchdb_server'])
-        db    = couch[config['couchdb_database']]
+
+        try:            
+            couch = couchdb.Server(config['couchdb_server'])
+            db    = couch[config['couchdb_database']]
+        except couchdb.http.ResourceNotFound:
+            print("Wake up! Database setup not valid!")
+            os._exit(1)
+
         try:
             doc = db[_id]
             
@@ -83,7 +104,7 @@ class LUSDResource(resource.Resource):
             self.createShortURL()
         return
 
-
+print(shortMe('a3cca2b2aa1e3b5b3b5aad99a8529074'))
 config = getConfig()
 reactor.listenTCP(int(config['listen_port']), server.Site(LUSDResource()))
 reactor.run()
