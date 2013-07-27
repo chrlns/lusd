@@ -66,7 +66,7 @@ class LUSDResource(resource.Resource):
         shortDoc = {'_id': shortID, 'hits': '0', 'last_access': '0', 'location': longURL}
         db[shortID] = shortDoc
         
-        return 
+        return shortID
 
 
     def getLocation(self, _id):
@@ -98,24 +98,25 @@ class LUSDResource(resource.Resource):
 
     
     def render_GET(self, request):
-        location = self.getLocation(request.path[1:])
-        
-        if location == None:
-            if config['error404_redirect'] == 'None':
-                request.setResponseCode(404)
-                return "404 not found"
+        if request.path == '/create':
+            if 'longurl' in request.args:
+                return self.createShortURL(request.args['longurl'][0])
             else:
-                location = config['error404_redirect'] + request.path[1:]
-        
-        request.setResponseCode(301)
-        request.setHeader("location", location)
-        return "301 moved permanently to " + location
-
-        
-    def render_POST(self, request):
-        if request.path == "/create":
-            self.createShortURL()
-        return
+                request.setResponseCode(400)
+                return 'Bad Request: missing parameter longurl'
+        else:
+            location = self.getLocation(request.path[1:])
+            
+            if location == None:
+                if config['error404_redirect'] == 'None':
+                    request.setResponseCode(404)
+                    return '404 not found'
+                else:
+                    location = config['error404_redirect'] + request.path[1:]
+            
+            request.setResponseCode(301)
+            request.setHeader('location', location)
+            return '301 moved permanently to ' + location
 
 
 config = getConfig()
