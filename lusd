@@ -20,7 +20,7 @@ import os
 import time
 
 from configobj import ConfigObj
-from twisted.web import server, resource
+from twisted.web import server, resource, static
 from twisted.internet import reactor
 
 # Short url alphabet, note the missing l and I for better readability
@@ -51,6 +51,12 @@ class LUSDResource(resource.Resource):
     """
     
     isLeaf = True
+    
+    def getChild(self, name, request):
+        print('getChild: ' + name)
+        if name == '':
+            return self
+        return resource.Resource.getChild(self, name, request)
 
     def createShortURL(self, longURL):
         couch = couchdb.Server(config['couchdb_server'])
@@ -118,10 +124,14 @@ class LUSDResource(resource.Resource):
             request.setHeader('location', location)
             return '301 moved permanently to ' + location
         else:
-            return super(LUSDResource, self).render_GET(request)
+            request.setResponseCode(404)
+            return '404 not found'
 
 
-config = getConfig()
+if __name__ == '__main__':
+    config = getConfig()
 
-reactor.listenTCP(int(config['listen_port']), server.Site(LUSDResource()))
-reactor.run()
+    lusd = LUSDResource()
+    lusd.putChild('static', static.File('./static'))
+    reactor.listenTCP(int(config['listen_port']), server.Site(lusd))
+    reactor.run()
