@@ -1,14 +1,29 @@
 <html>
 <head>
+<title>LUSD Testbench</title>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script>
-
+function create() {
+    $.ajax({
+        url: "http://localhost:8000/create?longurl=" + $("#longurl").val(),
+        type: "GET",
+        dataType: "text",
+        success: function(data) {
+            $("#shorturl").val(data);
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert(xhr.responseText + "\n" + thrownError);
+        }
+    });
+}
 </script>
 </head>
 <body>
-<form action="" onSubmit="create()">
-Long URL: <input type="text" name="longurl">
-<input type="submit" text="Make it short">
+<form>
+Long URL: <input type="text" id="longurl">
+<input type="button" value="Make it short" onClick="create()">
+<br>
+Short URL: <input type="text" id="shorturl">
 </form>
 </body>
 </html>

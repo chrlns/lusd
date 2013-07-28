@@ -58,7 +58,7 @@ class LUSDResource(resource.Resource):
         doc   = db['stats_']
 
         # Retrieve and increment nextID
-        nextID = doc['nextID']
+        nextID = int(doc['nextID'])
         doc['nextID'] = nextID + 1
         db['stats_'] = doc
 
@@ -87,7 +87,7 @@ class LUSDResource(resource.Resource):
             doc = db[_id]
             
             # Update stats
-            doc['hits']        = doc['hits'] + 1
+            doc['hits']        = int(doc['hits']) + 1
             doc['last_access'] = time.asctime(time.localtime(time.time()))
             db[_id] = doc
             
@@ -104,7 +104,7 @@ class LUSDResource(resource.Resource):
             else:
                 request.setResponseCode(400)
                 return 'Bad Request: missing parameter longurl'
-        else:
+        elif request.path[1:2] == config['short_prefix']:
             location = self.getLocation(request.path[1:])
             
             if location == None:
@@ -117,6 +117,8 @@ class LUSDResource(resource.Resource):
             request.setResponseCode(301)
             request.setHeader('location', location)
             return '301 moved permanently to ' + location
+        else:
+            return super(LUSDResource, self).render_GET(request)
 
 
 config = getConfig()
