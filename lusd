@@ -119,8 +119,13 @@ class LUSDResource(resource.Resource):
             request.redirect(bytearray(location, encoding='utf-8', errors='replace'))
             return 'Redirecting...'
         else:
-            request.setResponseCode(404)
-            return '404 not found'
+            if config['error404_redirect'] == 'None':
+                request.setResponseCode(404)
+                return '404 not found'
+            else:
+                location = config['error404_redirect'] + request.path[1:]
+                request.redirect(bytearray(location, encoding='utf-8', errors='replace'))
+                return 'Redirecting...'
 
 
 if __name__ == '__main__':
