@@ -68,7 +68,7 @@ class LUSDResource(resource.Resource):
         shortDoc = {'_id': shortID, 'hits': '0', 'last_access': '0', 'location': longURL}
         db[shortID] = shortDoc
         
-        return shortID
+        return config['base_url'] + config['short_prefix'] + shortID
 
 
     def getLocation(self, _id):

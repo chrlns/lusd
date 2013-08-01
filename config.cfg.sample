@@ -13,3 +13,6 @@ listen_port       = 8080
 
 # Prefix for short url, e.g. http://mydom.com/+XXY
 short_prefix      = +
+
+# Base url of all shorties
+base_url          = http://mydom.dom/

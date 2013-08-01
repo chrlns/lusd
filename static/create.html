@@ -5,7 +5,7 @@
 <script>
 function create() {
     $.ajax({
-        url: "create?longurl=" + $("#longurl").val(),
+        url: "../create?longurl=" + $("#longurl").val(),
         type: "GET",
         dataType: "text",
         success: function(data) {
