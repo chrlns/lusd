@@ -50,13 +50,9 @@ class LUSDResource(resource.Resource):
     POST requests return a short url to a given long one.
     """
     
-    isLeaf = True
+    def getChild(self, path, request):
+        return self
     
-    def getChild(self, name, request):
-        print('getChild: ' + name)
-        if name == '':
-            return self
-        return resource.Resource.getChild(self, name, request)
 
     def createShortURL(self, longURL):
         couch = couchdb.Server(config['couchdb_server'])
@@ -120,9 +116,8 @@ class LUSDResource(resource.Resource):
                 else:
                     location = config['error404_redirect'] + request.path[1:]
             
-            request.setResponseCode(301)
-            request.setHeader('location', location)
-            return '301 moved permanently to ' + location
+            request.redirect(bytearray(location, encoding='utf-8', errors='replace'))
+            return 'Redirecting...'
         else:
             request.setResponseCode(404)
             return '404 not found'
