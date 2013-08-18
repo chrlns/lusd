@@ -13,7 +13,7 @@ LUSD stands for little url shortening daemon and is what it says.
 
  - Create database in CouchDB
  - Create document with ID "stats_" and one field "nextID=1"
- - Adapt config.cfg to your needs"
+ - Adapt config.cfg to your needs
 
 ## Local startup ##
 
