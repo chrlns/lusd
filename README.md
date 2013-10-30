@@ -12,15 +12,14 @@
 ## Setup ##
 
  - Create database in CouchDB
- - Create document with ID "stats_" and one field "nextID=1"
  - Adapt config.cfg to your needs
 
 ## Local startup ##
 
 Start the daemon: 
-<pre>
-$ ./lusd
-</pre>
+
+    $ ./lusd
+
 
 It will run on port 8080 per default.
 Browse to http://mydomain:8080/static/create.html to create short urls.
