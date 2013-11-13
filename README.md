@@ -27,8 +27,8 @@ Everything in the static/ subdir will be served by lusd, e.g. for your css etc.
 
 If you'd like to run lusd behind a webserver as Apache, you could use this
 rewrite rule:
-<pre>
-RewriteEngine on
-RewriteBase /
-RewriteRule ^\+(.+) http://localhost:8080/+$1 [P]
-</pre>
+
+	RewriteEngine on
+	RewriteBase /
+	RewriteRule ^\+(.+) http://localhost:8080/+$1 [P]
+
