@@ -57,12 +57,17 @@ class LUSDResource(resource.Resource):
     def createShortURL(self, longURL):
         couch = couchdb.Server(config['couchdb_server'])
         db    = couch[config['couchdb_database']]
-        doc   = db['stats_']
+
+        try:
+            doc = db['stats_']
+        except couchdb.http.ResourceNotFound:
+            doc = {'nextID':1}
+            db['status_'] = doc
 
         # Retrieve and increment nextID
         nextID = int(doc['nextID'])
         doc['nextID'] = nextID + 1
-        db['stats_'] = doc
+        db['status_'] = doc
 
         shortID = shortMe(nextID)
         shortDoc = {'_id': shortID, 'hits': '0', 'last_access': '0', 'location': longURL}
