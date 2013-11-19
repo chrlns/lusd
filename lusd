@@ -59,7 +59,7 @@ class LUSDResource(resource.Resource):
         db    = couch[config['couchdb_database']]
 
         try:
-            doc = db['stats_']
+            doc = db['status_']
         except couchdb.http.ResourceNotFound:
             doc = {'nextID':1}
             db['status_'] = doc
