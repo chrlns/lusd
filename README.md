@@ -12,6 +12,7 @@
 ## Setup ##
 
  - Create database in CouchDB
+ - Add couchdb/access.json as _design/access document to your database
  - Adapt config.cfg to your needs
 
 ## Local startup ##
