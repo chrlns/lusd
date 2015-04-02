@@ -41,6 +41,17 @@ def shortMe(num):
         out = ALPHABET[rem] + out
 
     return out
+    
+
+def longMe(url):
+    num = 0
+    digit = 0
+    
+    for u in url[::-1]:
+        num += ALPHABET.find(u) * pow(len(ALPHABET), digit)
+        digit += 1
+        
+    return num
 
 
 class LUSDResource(resource.Resource):
@@ -53,27 +64,28 @@ class LUSDResource(resource.Resource):
     def getChild(self, path, request):
         return self
     
+    def getExistingId(self, db, longUrl):
+        for row in db.view('access/by-location', key=longUrl):
+            return int(row['id'])
+        return -1
+    
+    def nextId(self, db):
+        for row in db.view('access/by-id'):
+			return row['value'] + 1
 
-    def createShortURL(self, longURL):
+    def createShortUrl(self, longUrl):
         couch = couchdb.Server(config['couchdb_server'])
         db    = couch[config['couchdb_database']]
 
-        try:
-            doc = db['status_']
-        except couchdb.http.ResourceNotFound:
-            doc = {'nextID':1}
-            db['status_'] = doc
-
-        # Retrieve and increment nextID
-        nextID = int(doc['nextID'])
-        doc['nextID'] = nextID + 1
-        db['status_'] = doc
-
-        shortID = shortMe(nextID)
-        shortDoc = {'_id': shortID, 'hits': '0', 'last_access': '0', 'location': longURL}
-        db[shortID] = shortDoc
+        shortId = self.getExistingId(db, longUrl)
+        if shortId == -1:
+            shortId = shortMe(self.nextId(db))
+            shortDoc = {'_id': str(shortId), 'hits': '0', 'last_access': '0', 'location': longUrl}
+            db[str(shortId)] = shortDoc
+        else:
+            shortId = shortMe(shortId)
         
-        return config['base_url'] + config['short_prefix'] + shortID
+        return config['base_url'] + config['short_prefix'] + shortId
 
 
     def getLocation(self, _id):
@@ -107,7 +119,7 @@ class LUSDResource(resource.Resource):
     def render_GET(self, request):
         if request.path == '/create':
             if 'longurl' in request.args:
-                return self.createShortURL(request.args['longurl'][0])
+                return self.createShortUrl(request.args['longurl'][0])
             else:
                 request.setResponseCode(400)
                 return 'Bad Request: missing parameter longurl'

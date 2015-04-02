@@ -1,0 +1,14 @@
+{
+    "_id": "_design/access",
+    "language": "javascript",
+    "version": 1,
+    "views": {
+        "by-id": {
+            "map": "function(doc) { if(doc._id == '_design/access') return; emit(null, doc._id); }",
+            "reduce": "function(keys, values) { var longMe = function (url){var ALPHABET='0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ';var num=0;url=url.split('').reverse().join('');for(var digit=0;digit<url.length;digit++){num+=ALPHABET.indexOf(url[digit])*Math.pow(ALPHABET.length,digit)}return num}; var ids = []; values.forEach(function(id) { id = longMe(id); if(!isNaN(id)) ids.push(id); }); return Math.max.apply(Math, ids); }"
+        },
+        "by-location" : {
+            "map": "function(doc) { emit(doc.location); }"
+        }
+    }
+}
